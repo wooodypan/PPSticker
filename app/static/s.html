@@ -93,10 +93,9 @@ margin: 10px;
 $(function() {
   var $pp_mysticker = $('#pp_mysticker');
   $pp_mysticker.on('click', function() {
-    var pathArray = window.location.pathname.split('/');
-    // console.log('path==='+pathArray[1])
-    let subpath = pathArray[1];
-    let newURL = window.location.origin + '/'+subpath +"/sadd.html"
+    let str = window.location.href
+    var res = str.substring(0, str.length - 6);
+    let newURL = res +"sadd.html"
     window.location.href = newURL
   });
   var $searchBar = $('#searchBar'),
