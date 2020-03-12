@@ -4,6 +4,10 @@
 ```bash
 python3 -m venv venv
 pip install -r requirements.txt
+# `pip install`Mac如果出现这样的错误Error: pg_config executable not found. 就安装下面的 
+brew install postgresql
+# CentOS服务器出错则是下面的（https://stackoverflow.com/a/27043037/4493393）
+yum install -y postgresql postgresql-devel python-devel
 ```
 2 flask 脚本
 因为在虚拟环境中安装 Flask 时会同时安装 flask 脚本
@@ -50,7 +54,8 @@ pip install -r requirements.txt
 
 ``` 
 #默认5000端口
-python manage.py runserver
+export FLASK_APP=flasky.py
+flask run
 ```
 
 上传表情主页：http://127.0.0.1:5000/static/sadd.html

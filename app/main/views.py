@@ -9,6 +9,14 @@ from .. import db
 from ..models import Permission, Role, User, Post, Comment
 from ..decorators import admin_required, permission_required
 
+#PP表情静态资源(待优化)
+@main.route('/s')
+def stickerindex():
+    return current_app.send_static_file('s.html')
+
+@main.route('/sadd')
+def stickeradd():
+    return current_app.send_static_file('sadd.html')
 
 @main.after_app_request
 def after_request(response):

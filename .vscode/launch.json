@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "表情包服务之Flask内置调试器",
+            "name": "0",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/flasky.py",
@@ -13,6 +13,22 @@
                 "runserver"
             ],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "表情包服务之Flask内置调试器",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "justMyCode": false, //跳到模块源代码内部
+            "env": {
+                "FLASK_APP": "flasky.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "1"
+            },
+            "args": [
+                "run"
+            ],
+            "jinja": true
         },
         {
             "name": "表情包服务之VSCode调试器",
