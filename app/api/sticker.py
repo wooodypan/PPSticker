@@ -64,6 +64,10 @@ def uploaded_file(filename):
     return send_from_directory(current_app.config['UPLOAD_FOLDER'],
                                filename)        
 
+
+@api.route('/indexs')
+def stickerindex():
+    return current_app.send_static_file('s.html')
 # http://127.0.0.1:5000/api/v1/users/12345/sticker
 # http://p.agolddata.com/sticker/api/v1/user/12345/sticker
 # http://p.agolddata.com/api/v1/user/12345

@@ -4,7 +4,7 @@
 ```bash
 python3 -m venv venv
 pip install -r requirements.txt
-# `pip install`Mac如果出现这样的错误Error: pg_config executable not found. 就安装下面的 
+# 运行完上面的，如果在MacOS出现这样的错误Error: pg_config executable not found. 就安装下面的 
 brew install postgresql
 # CentOS服务器出错则是下面的（https://stackoverflow.com/a/27043037/4493393）
 yum install -y postgresql postgresql-devel python-devel
@@ -14,6 +14,7 @@ yum install -y postgresql postgresql-devel python-devel
 flask 命令由 Flask 安装，而不是你的应用。为了可以使用，它必须被告知可以在哪里找到你的应用。怎么告知呢？终端输入`export FLASK_APP=flasky.py`再输入`flask run`即可启动服务器
 即FLASK_APP 环境变量用于定义如何载入应用，详见：https://dormousehole.readthedocs.io/en/latest/cli.html
 假如你的flasky.py文件里有自动以的deploy命令，那么可以这么运行
+
 ```
 export FLASK_APP=flasky.py
 flask deploy
@@ -21,10 +22,13 @@ flask deploy
 
 每次输入含flask的命令你都先要输这个`export FLASK_APP=flasky.py`命令是不是很烦？
 没关系，如果不想的话就在根目录新建一个`.env`文件然后输入以下敏感信息内容：（也可以`vim .env`然后输入`export FLASK_APP=flasky.py`保存）
+
 ```
 FLASK_APP=flasky.py
 EMAIL=1111@qq.com
 DATABASE_PASSWORD=12345678
+# 如果想检测文件修改自动刷新可以加上这个
+FLASK_DEBUG=1
 ```
 接下来呢？未完待续吧！
 
