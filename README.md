@@ -21,7 +21,7 @@ flask deploy
 ```
 
 每次输入含flask的命令你都先要输这个`export FLASK_APP=flasky.py`命令是不是很烦？
-没关系，如果不想的话就在根目录新建一个`.env`文件然后输入以下敏感信息内容：（也可以`vim .env`然后输入`export FLASK_APP=flasky.py`保存）
+没关系，如果嫌麻烦的话就在根目录新建一个`.env`文件然后输入以下敏感信息内容：（也可以`vim .env`然后输入`export FLASK_APP=flasky.py`保存）
 
 ```
 FLASK_APP=flasky.py
@@ -30,8 +30,11 @@ DATABASE_PASSWORD=12345678
 # 如果想检测文件修改自动刷新可以加上这个
 FLASK_DEBUG=1
 ```
-接下来呢？未完待续吧！
+接下来呢？其他变量可以设置，但是run还是不行
+##请务必设置.env文件上传路径！
+比如我的Mac是：`UPLOAD_FOLDER='/Users/pan/Downloads/iiimagepath/'`
 
+CentOS是：`UPLOAD_FOLDER='/var/www/html/image'`
 
 
 

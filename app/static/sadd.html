@@ -1,84 +1,85 @@
 <!DOCTYPE html>
 <html>
-  <!-- https://juejin.im/post/5e3f793551882549554857c7#heading-0 -->
+<!-- https://juejin.im/post/5e3f793551882549554857c7#heading-0 -->
+
 <head>
-<meta name="description" content="FormData提交上传图片">
+  <meta name="description" content="FormData提交上传图片">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>formData提交上传</title>
-<style type="text/css">
-  
+  <style type="text/css">
   .img-wrap {
-            position: relative;
-            display: inline-block;
-            margin: 10px 5px;
-            width: 100px;
-            height: 100px;
-            border: 1px solid #d9d9d9;
-            overflow: hidden;
-        }
+    position: relative;
+    display: inline-block;
+    margin: 10px 5px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #d9d9d9;
+    overflow: hidden;
+  }
 
-        /* 为了让img垂直居中 */
-        .img-wrap:after {
-            display: inline-block;
-            content: '';
-            height: 100%;
-            vertical-align: middle;
-        }
+  /* 为了让img垂直居中 */
+  .img-wrap:after {
+    display: inline-block;
+    content: '';
+    height: 100%;
+    vertical-align: middle;
+  }
 
-        .img-wrap img {
-            vertical-align: middle;
-            width: 100%;
-        }
-        .img-wrap > span {
-            position: absolute;
-            top: 0;
-            right: 0px;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            line-height: 16px;
-            border-radius: 20px;
-            background: rgba(0,0,0,0.5);
-            cursor: pointer;
-        }
+  .img-wrap img {
+    vertical-align: middle;
+    width: 100%;
+  }
 
-        .img-wrap>span::after {
-            display: inline-block;
-            content: 'x';
-            color: #fff;
-            font-size: 12px;
-        }
+  .img-wrap>span {
+    position: absolute;
+    top: 0;
+    right: 0px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 16px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+  }
 
-        label {
-            cursor: pointer;
-        }
-        label > input {
-            display: none;
-        }
-</style>
+  .img-wrap>span::after {
+    display: inline-block;
+    content: 'x';
+    color: #fff;
+    font-size: 12px;
+  }
 
+  label {
+    cursor: pointer;
+  }
+
+  label>input {
+    display: none;
+  }
+  </style>
 </head>
+
 <body>
   <div id="img-container"></div>
-    <div>
-        <!-- 用label替代input.file作为视觉上的上传交互触发器，方便样式统一和美化 -->
-        <label>
-            请选择上传文件
-            <!-- accept属性仅仅是实现了文件选择器里展示的文件类型默认过滤出指定类型，但是不会真正阻止上传别的类型，需要结合js检验 -->
-            <input type="file" id="file" multiple accept="image/*" />
-        </label>
-        <button onclick="submitFormData()">提交</button>
-    </div>
+  <div>
+    <!-- 用label替代input.file作为视觉上的上传交互触发器，方便样式统一和美化 -->
+    <label>
+      请选择上传文件
+      <!-- accept属性仅仅是实现了文件选择器里展示的文件类型默认过滤出指定类型，但是不会真正阻止上传别的类型，需要结合js检验 -->
+      <input type="file" id="file" multiple accept="image/*" />
+    </label>
+    <button onclick="submitFormData()">提交</button>
+  </div>
 </body>
 <script type="text/javascript">
-  
-  // 用于记录上传的所有文件
+// 用于记录上传的所有文件
 var uploadFiles = [];
 
 document.querySelector('#file').addEventListener('change', upload);
 
-function upload (ev) {
+function upload(ev) {
   var e = ev || event;
   var files = e.target.files;
   if (!files.length) {
@@ -100,7 +101,7 @@ function upload (ev) {
  * 检验上传文件类型
  * @param {FileList} files - 此次选择上传的文件列表
  */
-function verifyType (files) {
+function verifyType(files) {
   for (var i = 0; i < files.length; i++) {
     // type属性是根据文件后缀名来判断的，所以如果你修改了文件的后缀名，type值也会发生改变
     // 因此不建议仅用type来作为唯一的判断条件
@@ -111,12 +112,12 @@ function verifyType (files) {
   return true;
 }
 
-function objectURLPreview (files) {
+function objectURLPreview(files) {
   // IE9（含9）以下不支持createObjectURL
   var index = uploadFiles.length - files.length;
   for (var i = 0; i < files.length; i++) {
     var url = window.URL.createObjectURL(files[i]);
-    createPreviewWrap(url, index + i, function (){
+    createPreviewWrap(url, index + i, function() {
       // 释放url内存
       // 如果是用background-image来呈现图片，那么也是要通过new Image对象来加载图片
       // 监听onload事件后再把url赋值给background-image，之后再释放内存即可
@@ -125,7 +126,7 @@ function objectURLPreview (files) {
   }
 }
 
-function createPreviewWrap (url, index, cb) {
+function createPreviewWrap(url, index, cb) {
   var imgWrap = document.createElement('div');
   var image = new Image();
   imgWrap.className = 'img-wrap';
@@ -133,17 +134,17 @@ function createPreviewWrap (url, index, cb) {
   cb && (image.onload = cb);
   imgWrap.appendChild(image);
   const deleteIcon = document.createElement('span');
-  deleteIcon.onclick = () => {deleteFile(index, imgWrap);}// 主要改动为这里
+  deleteIcon.onclick = () => { deleteFile(index, imgWrap); } // 主要改动为这里
   imgWrap.appendChild(deleteIcon);
   document.getElementById('img-container').appendChild(imgWrap);
 }
 
-function deleteFile (index, imgWrap) {
+function deleteFile(index, imgWrap) {
   uploadFiles.splice(index, 1);
   document.getElementById('img-container').removeChild(imgWrap);
 }
 
-function submitFormData () {
+function submitFormData() {
   if (uploadFiles.length === 0) {
     alert('请选择文件');
     return;
@@ -153,11 +154,12 @@ function submitFormData () {
   uploadFiles.forEach(item => {
     formData.append('ppFiles', item);
   });
+  formData.append('pptag', '搞笑');
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'http://127.0.0.1:5000/api/v1/addsticker/');
+  xhr.open('POST', '/api/v1/addsticker/');
   xhr.send(formData);
-  xhr.onload = function () {
-    if (this.status === 200 || this.status == 304) {
+  xhr.onload = function() {
+    if (this.status === 200 || this.status === 201 ||this.status == 304) {
       alert('上传成功');
     } else {
       alert('上传失败');
@@ -165,4 +167,5 @@ function submitFormData () {
   }
 }
 </script>
+
 </html>

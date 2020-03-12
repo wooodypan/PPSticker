@@ -28,25 +28,37 @@ def addsticker():
     print('=====addsticker=====')
     if request.method == 'POST':
         file = request.files['ppFiles']
+        pptag = request.form['pptag']
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filename = "."+filename if "." not in filename else filename
-            filename = str(datetime.now().strftime('%Y-%m-%d_%H_%M_%S.%f')[:-3]) + filename 
+            # filename = secure_filename(file.filename)
+            # filename = "."+filename if "." not in filename else filename
+            extension = '.' + file.mimetype.split('/')[1]
+            filename = str(datetime.now().strftime('%Y-%m-%d_%H%M%S_%f')[:-3]) + extension
             absolute_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             file.save(absolute_path)
+            # file.remove
             # return '{"code":200}' 34fa38284dfe7219e0392c11da505498
             img_hash = md5_file(absolute_path)
-            # img_hash = hashlib.md5(file.read()).hexdigest() 
+            # img_hash2 = hashlib.md5(file.read()).hexdigest() #错误
+            
+            # encoding = 'utf-8'
+            # b'hello'.decode(encoding)
             fileExists = Sticker.query.filter_by(sid=img_hash).first()
             if fileExists is None:
                 # smmsURL = SMMSImage.upload(image=absolute_path)
-                newSticker = Sticker(sid=img_hash,url= request.path+filename)
+                currentUser = g.current_user
+                newSticker = Sticker(sid=img_hash,
+                                     owner_id=currentUser.id,
+                                     tag=pptag,
+                                     url= request.path+filename)
                 db.session.add(newSticker)#host_url origin
                 db.session.commit()
                 return redirect(url_for('api.uploaded_file',filename=filename))
             else:
+                os.remove(absolute_path)
                 # 如果您使用的是蓝图，则url_for应该这样调用：url_for（'blueprint_name.func_name'）
-                return fileExists.to_json()
+                # return fileExists.to_json()
+                return jsonify(fileExists.to_json()), 200, {'Location': 'sss'}
     # json = request.json
     # return jsonify(post.to_json()), 201, {'Location': url_for('api.get_post', id=post.id, _external=True)}
     
