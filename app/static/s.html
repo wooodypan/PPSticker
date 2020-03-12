@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>表情主页</title>
+
+  <head>
+    <link href="/static/favicon.ico" rel='icon' type='image/x-icon' />
+    <!-- 引入 WeUI -->
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/2.3.0/weui.min.css" />
+  </head>
+</head>
+<style type="text/css">
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f0f0f0;
+}
+
+.pandaflex {
+  display: flex;
+  display: -webkit-flex;
+  /* Safari */
+}
+
+.ppcenter {
+  justify-content: center;
+  align-items: center;
+}
+
+.ppcrop {
+  /*width: 200px;*/
+  /*height: 150px;*/
+  overflow: hidden;
+}
+.stickerbg {
+  /*max-width:100%;*/
+width: 100px;
+margin: 10px;
+}
+.ppdesc {
+  max-width: 70px;
+  overflow: hidden;
+  color: #666666;
+}
+/* .pp_header {} */
+.pp_searchbar {
+  justify-content: center;
+  padding: 10px 20px 30px 40px;
+}
+</style>
+
+<body>
+  <!-- ----------------------------html----------------------------- -->
+  <div id="app" class="ppcontainer">
+
+    <div id="pp_mysticker" class="pandaflex ppcenter" style="flex-direction: column;justify-content: center;">
+      <img class="" style="width: 150px;height: 150px;margin-bottom: -45px;" src="http://tva1.sinaimg.cn/bmiddle/9150e4e5gy1gciouowmmrj206o06owed.jpg">
+      <!-- <div class="pandaflex" style="background-color: #fff;font-size: 28px;width: 100px;">啊啊啊</div> -->
+      <p style="background-color: #fff;font-size: 28px;">我的表情</p>
+    </div>
+    <div class="weui-search-bar pp_searchbar" id="searchBar">
+      <form class="weui-search-bar__form">
+        <div class="weui-search-bar__box">
+          <i class="weui-icon-search"></i>
+          <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required />
+          <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+        </div>
+        <label class="weui-search-bar__label" id="searchText">
+          <i class="weui-icon-search"></i>
+          <span>搜索</span>
+        </label>
+      </form>
+      <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+    </div>
+    <div class="pandaflex" style="flex-wrap: wrap;align-items: center;">
+      
+      <panda-cell v-for="item in myhongbaolist" v-bind:panda="item" :key="item.time" @click="clickmycell(item)"></panda-cell>
+    </div>
+  </div>
+</body>
+<script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.7/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<!-- <script src="//cdn.bootcss.com/eruda/1.4.2/eruda.min.js"></script>
+<script>eruda.init();</script> -->
+<script type="text/javascript">
+$(function() {
+  var $pp_mysticker = $('#pp_mysticker');
+  $pp_mysticker.on('click', function() {
+    window.location.href = "/sadd.html"
+  });
+  var $searchBar = $('#searchBar'),
+    $searchResult = $('#searchResult'),
+    $searchText = $('#searchText'),
+    $searchInput = $('#searchInput'),
+    $searchClear = $('#searchClear'),
+    $searchCancel = $('#searchCancel');
+  $searchBar.addClass('weui-search-bar_focusing');
+  $searchInput.focus();
+
+  function hideSearchResult() {
+    $searchResult.hide();
+    $searchInput.val('');
+  }
+
+  function cancelSearch() {
+    hideSearchResult();
+    $searchBar.removeClass('weui-search-bar_focusing');
+    $searchText.show();
+  }
+
+  $searchText.on('click', function() {
+    $searchBar.addClass('weui-search-bar_focusing');
+    $searchInput.focus();
+  });
+  $searchInput
+    .on('blur', function() {
+      if (!this.value.length) cancelSearch();
+    })
+    .on('input', function() {
+      if (this.value.length) {
+        $searchResult.show();
+      } else {
+        $searchResult.hide();
+      }
+    });
+  $searchClear.on('click', function() {
+    hideSearchResult();
+    $searchInput.focus();
+  });
+  $searchCancel.on('click', function() {
+    cancelSearch();
+    $searchInput.blur();
+  });
+});
+</script>
+<script>
+function refresh() {
+  window.location.reload();
+}
+// setTimeout('refresh()', 5000);
+Vue.component('panda-cell', {
+  props: ['panda'],
+  methods: {
+    handleClick(evt) {
+      this.$emit('click', evt); //通过事件向父级组件发送消息（封装）
+    },
+    sendHongbao(param1, param2) {
+      var _this = this;
+      this.$messagebox.prompt('请输入接收者用户ID', '赠送红包').then(({ value }) => {
+        if (value) {
+          console.log(value)
+
+        } else { this.$toast('请输入接收者用户ID') }
+      }).catch((reason) => console.log('isCanceled'));;
+    }
+  },
+  template: `
+  <div class="pandaflex" style="height:150px;flex-direction:column;background-color:#fff;margin:10px;justify-content:center;align-items:center;">
+  <img class="stickerbg" :src="panda.url">
+  <div class="ppdesc" style="display:block;">{{panda.time}}</div>
+  </div>
+  `
+})
+var app = new Vue({
+  el: '#app',
+  data: {
+    message: '2333',
+    visible: false,
+    input_account: '',
+    input_password: '',
+    error_msg: '2333',
+    activeName: 'third',
+    iframe_src: '',
+    hongbaolist: [],
+    myhongbaolist: [],
+    settingTableData: [{ name: '退出登录', label: '1' }, { name: '提醒设置', label: '1' }],
+    add_lucky_num: '',
+    add_hongbao_content: '',
+    user_info: { user_id: 'user', label: '1', image: 'https://tvax1.sinaimg.cn/crop.7.8.500.500.180/c0184b30ly8fr8v3lmzg5j20e80e8dhm.jpg' },
+    selected: '2',
+    xiaosongtoken: '',
+    xiaosongstatus: '设置小松主页链接（未设置）',
+    xiaosong_url: '',
+    qrcodeimg: '',
+    location: false,
+    //默认选择的值
+    lucky_num: ''
+
+  },
+  created: function() {
+    // `this` 指向 vm 实例
+    console.log('created == ' + this.error_msg)
+  },
+  mounted() {
+    var _this = this;
+    this.getMyHB();
+    console.log('mounted ==')
+  },
+  methods: {
+
+    getMyHB() {
+      var _this = this;
+
+      var aaa = ['http://tva1.sinaimg.cn/bmiddle/005A0PMely1fsbvq40qocg305a05ajsk.gif',
+        'http://tva1.sinaimg.cn/bmiddle/005J4OU5ly1gbxgbl42z8j306y06y0tc.jpg', 'http://tva1.sinaimg.cn/bmiddle/86883a42gy1flkzbvue8hg206o05e3yl.gif',
+        'http://tva1.sinaimg.cn/bmiddle/006i8XEzgy1fgcchivx21j30j60j6aaq.jpg',
+        'http://tva1.sinaimg.cn/bmiddle/994b6f2ely1fnvjd02i88g206o06oab0.gif',
+        'http://tva1.sinaimg.cn/bmiddle/994b6f2ely1fnvjczmvqzg206o06odg4.gif',
+        'http://tva1.sinaimg.cn/bmiddle/994b6f2ely1fnvjczbiywg206o06ojrl.gif',
+        'http://tva1.sinaimg.cn/bmiddle/994b6f2ely1fnvjcz0p0rg206o06o74r.gif',
+        'http://tva1.sinaimg.cn/bmiddle/006i8XEzgy1ff4ksb8jgoj30hs0hswf5.jpg',
+        'http://tva1.sinaimg.cn/bmiddle/006i8XEzgy1ff4ksagz73j30hs0hs74w.jpg',
+        'http://tva1.sinaimg.cn/bmiddle/c36bc670gy1fd7cfx5y48j20b40b4ac2.jpg',
+        'http://tva1.sinaimg.cn/bmiddle/006i7geoly1fapbjwivv8j30k00k0wfe0.jpg'
+      ]
+      for (var i = 0; i < aaa.length; i++) {
+        _this.myhongbaolist.push({ "url": aaa[i], "time": String(Math.random()) })
+      }
+      return;
+      this.$indicator.open();
+      axios.get(hbapi.myhongbao, {
+          params: {
+            token: token,
+            user_id: user_id
+          }
+        })
+        .then(function(response) {
+          _this.$indicator.close();
+          if (response.data.error) {
+            _this.visible = true;
+            _this.error_msg = response.data.error;
+            return;
+          }
+          if (typeof(response.data.hongbao) != 'object') {
+            _this.$toast('返回数据格式不对');
+            return;
+          }
+          _this.myhongbaolist.length = 0;
+          for (var i = 0; i < response.data.hongbao.length; i++) {
+            var model = _this.handleModel(response.data.hongbao[i])
+            model.is_mine = true;
+            _this.myhongbaolist.push(model);
+          }
+          // console.log('response=====' + JSON.stringify(response));
+        })
+        .catch(function(error) {
+          _this.$indicator.close();
+          console.log('error=====' + error);
+        });
+    },
+
+    handleModel(model) {
+
+    },
+    tableRowClassName({ row, rowIndex }) {
+
+    },
+    help(index, param2) {
+
+    },
+
+
+    init() {
+      //do something
+      console.log('页面加载完毕');
+    },
+    mounted() {
+      //do something
+      console.log('页面加载完毕');
+    },
+    handleClick(tab, event) {
+      // console.log(tab, event);
+      if (tab.label == '我的') {
+
+      } else if (tab.label == '帮助') {
+
+      }
+    },
+    login_action: function() {
+
+    },
+    clickmycell(model, param2, param3) {
+      console.log('====');
+
+    },
+    clickMyRow(model, param2, param3) {
+
+    },
+
+    remindsetting: function() {
+      window.location.href = "reminder.html?token=" + getCookieWithKey('token') + '&xiaosongtoken=' + this.xiaosongtoken;
+    },
+
+
+
+  }
+})
+app.$watch('selected', function(newVal, oldVal) {
+
+})
+</script>
+
+</html>

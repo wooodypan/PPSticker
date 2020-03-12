@@ -5,11 +5,48 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Flask Dev",
+            "name": "表情包服务之Flask内置调试器",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/flasky.py",
+            "args": [
+                "runserver"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "表情包服务之VSCode调试器",
             "type": "python",
             "request": "launch",
             "module": "flask",
             "justMyCode": false,//跳到模块源代码内部
+            "env": {
+                "FLASK_APP": "flasky.py"                
+            },
+            "args": [
+                "run",
+                "--no-debugger",//--no-debugger表示用VSCode内置的Python调试工具（无法使用flask修改代码后自动加载功能），不这样的话，模块的但不调试无法进行！
+                "--no-reload"      // Remove to auto-reload modified pages
+            ]
+        },
+        {
+            "name": "表情包服务之数据库升级",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/flasky.py",
+            "args": [
+                "db deploy",
+                "--no-debugger",
+                "--no-reload"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Flask Dev",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "justMyCode": false, //跳到模块源代码内部
             "env": {
                 "FLASK_APP": "flasky.py",
                 "FLASK_ENV": "development",

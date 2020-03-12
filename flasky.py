@@ -1,9 +1,11 @@
 import os
 from dotenv import load_dotenv
-
+# .env 文件中可以定义 FLASK_CONFIG 变量，选择使用哪个配置；可以定义 DATABASE_URL 变量，指定连接数据库的 URL；还可以定义电子邮件服务器的凭据，等等。如前所述，由于 .env 文件中包含敏感信息，不能纳入版本控制。
+# 日常项目中，敏感信息（如数据库密码）比较推荐使用.env文件来单独管理，且不纳入git管理中。
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
+
 
 COV = None
 if os.environ.get('FLASK_COVERAGE'):

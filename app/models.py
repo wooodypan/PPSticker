@@ -17,7 +17,30 @@ class Permission:
     MODERATE = 8
     ADMIN = 16
 
+class Sticker(db.Model):
+    __tablename__ = 'sticker'
+    id = db.Column(db.Integer, primary_key=True)
+    sid = db.Column(db.String(64), unique=True, index=True)#哈希值
+    url = db.Column(db.String(500), unique=True)
+    thumbnail = db.Column(db.String(500))
+    smmsURL = db.Column(db.String(100))
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    width = db.Column(db.Integer)
+    height = db.Column(db.Integer)
+    tag = db.Column(db.String(500))
 
+    #宽、高、使用次数
+    # backref 参数向 User 模型中添加一个 role 属性，从而定义反向关系。这一属性可替代 role_id 访问 Role 模型，此时获取的是模型对象，而不是外键的值。
+    # owner_id = db.relationship('User', backref='role', lazy='dynamic')
+    def to_json(self):
+        json_post = {
+            'url': self.url
+        }
+        return json_post
+    def __repr__(self):
+        return '<Sticker %r>' % self.sid
+    
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
