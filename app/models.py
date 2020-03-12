@@ -87,7 +87,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), unique=True, index=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
-    confirmed = db.Column(db.Boolean, default=False)
+    confirmed = db.Column(db.Boolean, default=True)#PP 默认不验证
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
     about_me = db.Column(db.Text())
@@ -136,11 +136,11 @@ class User(UserMixin, db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
-
+    # “生成一个令牌，有效期默认为一小时。”
     def generate_confirmation_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id}).decode('utf-8')
-
+    # 检验令牌，如果检验通过，就把用户模型中新添加的 confirmed 属性设为 True。检查令牌中的 id 是否与存储在 current_user 中的已登录用户匹配。这样能确保为一个用户生成的确认令牌无法用于确认其他用户
     def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
