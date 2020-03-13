@@ -7,7 +7,7 @@ class Config:
     ALLOWED_EXTENSIONS = set(['txt', 'webp', 'png', 'jpg', 'jpeg', 'gif'])
     #上传文件大小的上限
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024
-    APPLICATION_ROOT = '/sticker'
+    # APPLICATION_ROOT = '/sticker'#暂时没得用
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.googlemail.com')
     MAIL_PORT = int(os.environ.get('MAIL_PORT', '587'))

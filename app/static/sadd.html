@@ -156,7 +156,7 @@ function submitFormData() {
   });
   formData.append('pptag', '搞笑');
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/api/v1/addsticker/');
+  xhr.open('POST', '/sticker/api/v1/addsticker/');
   xhr.send(formData);
   xhr.onload = function() {
     if (this.status === 200 || this.status === 201 ||this.status == 304) {
