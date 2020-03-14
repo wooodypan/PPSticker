@@ -18,7 +18,8 @@ login_manager.login_view = 'auth.login'
 
 
 def create_app(config_name):
-    app = Flask(__name__)
+    # static_url_path表示用户浏览器访问的url是什么样子，static_folder参数是你实际的文件路径
+    app = Flask(__name__,static_url_path="/sticker/static")
     # app.config["APPLICATION_ROOT"] = "/static"
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
