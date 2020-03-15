@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>表情主页</title>
+
+  <head>
+    <link href="/static/favicon.ico" rel='icon' type='image/x-icon' />
+    <!-- 引入 WeUI -->
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/2.3.0/weui.min.css" />
+  </head>
+</head>
+<style type="text/css">
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f0f0f0;
+}
+
+.pandaflex {
+  display: flex;
+  display: -webkit-flex;
+  /* Safari */
+}
+
+.ppcenter {
+  justify-content: center;
+  align-items: center;
+}
+
+.ppcrop {
+  /*width: 200px;*/
+  /*height: 150px;*/
+  overflow: hidden;
+}
+
+/* .pp_header {} */
+.pp_searchbar {
+  justify-content: center;
+  padding: 10px 20px 30px 40px;
+}
+</style>
+
+<body>
+  <div class="container weui-cells1 weui-cells_form1" id="uploader">
+    <div class="weui-cell">
+      <div class="weui-cell__bd">
+        <div class="weui-uploader">
+          <div class="weui-uploader__hd">
+            <p class="weui-uploader__title">图片上传</p>
+            <div class="weui-uploader__info">0/2</div>
+          </div>
+          <div class="weui-uploader__bd" >
+            <ul class="weui-uploader__files" id="uploaderFiles"></ul>
+            <div class="weui-uploader__input-box" id="uploaderInputBG">
+              <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" capture="camera" multiple="" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container weui-btn_area">
+    <a href="javascript:;" onclick="submitFormData()" class="weui-btn weui-btn_primary" id="uploadBtn">上传</a>
+  </div>
+</body>
+<script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.7/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<!-- <script src="//cdn.bootcss.com/eruda/1.4.2/eruda.min.js"></script>
+<script>eruda.init();</script> -->
+<script type="text/javascript">
+
+$(function() {
+  var tmpl = '<li class="weui-uploader__file" style="background-image:url(#url#)"></li>',
+    $gallery = $("#gallery"),
+    $galleryImg = $("#galleryImg"),
+    $uploaderInput = $("#uploaderInput"),
+    $uploaderFiles = $("#uploaderFiles");
+
+  $uploaderInput.on("change", function(e) {
+    var src, url = window.URL || window.webkitURL || window.mozURL,
+      files = e.target.files;
+
+
+    Array.prototype.push.apply(uploadFiles, files);
+    var formData = new FormData();
+
+    for (var i = 0, len = files.length; i < len; ++i) {
+      var file = files[i];
+
+      formData.append('files[]', files[i]);
+
+
+
+
+      if (url) {
+        src = url.createObjectURL(file);
+      } else {
+        src = e.target.result;
+      }
+
+      $uploaderFiles.append($(tmpl.replace('#url#', src)));
+    }
+
+$('#uploaderInputBG').remove()
+
+    //上传开始111
+
+    // axios.post('/sticker/api/v1/addsticker/', {
+    //     firstName: 'Fred',
+    //     lastName: 'Flintstone'
+    //   })
+    //   .then(function(response) {
+    //     console.log(response);
+    //   })
+    //   .catch(function(error) {
+    //     console.log(error);
+    //   });
+
+
+    // axios.post('/sticker/api/v1/addsticker/', formData, {
+    //   method: 'post',
+    //   headers: {
+    //     // 'Content-Type': imageFile.type
+    //     'Content-Type': 'multipart/form-data'
+    //   },
+    //   transformRequest: [function(data) {
+    //     return data
+    //   }],
+    //   onUploadProgress: function(e) {
+    //     var percentage = Math.round((e.loaded * 100) / e.total) || 0;
+    //     if (percentage < 100) {
+    //       console.log(percentage + '%'); // 上传进度
+    //     }
+    //   }
+    // }).then(function(resp) {
+    //   console.log(resp.data); // {code: 200, description: "", detail: null}
+    // })
+    //上传结束111
+
+  });
+  $uploaderFiles.on("click", "li", function() {
+    $galleryImg.attr("style", this.getAttribute("style"));
+    // $gallery.fadeIn(100);
+  });
+  $gallery.on("click", function() {
+    // $gallery.fadeOut(100);
+  });
+});
+</script>
+<script type="text/javascript">
+var uploadFiles = [];
+
+function submitFormData() {
+  if (uploadFiles.length === 0) {
+    alert('请选择文件');
+    return;
+  }
+  // FFormData ie10以下不支持
+  var formData = new FormData();
+  uploadFiles.forEach(item => {
+    formData.append('ppFiles', item);
+  });
+  formData.append('pptag', '搞笑');
+
+
+  // axios.post('/sticker/api/v1/addsticker/', {
+  //       firstName: 'Fred',
+  //       lastName: 'Flintstone'
+  //     })
+  //     .then(function(response) {
+  //       console.log(response);
+  //     })
+  //     .catch(function(error) {
+  //       console.log(error);
+  //     });
+
+  axios.post('/sticker/api/v1/addsticker/', formData, {
+      headers: {
+        // 'accept': 'application/json',
+        // 'Accept-Language': 'en-US,en;q=0.8',
+        'Content-Type': 'multipart/form-data'
+        // 'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+      }
+    })
+    .then((response) => {
+      //handle success
+      console.log('====success' + response)
+    }).catch((error) => {
+      //handle error
+      console.log('====catch')
+    });
+  return;
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/sticker/api/v1/addsticker/');
+  xhr.send(formData);
+  xhr.onload = function() {
+    if (this.status === 200 || this.status == 304) {
+      alert('上传成功');
+    } else if (this.status === 201) {
+      alert('你丫的上传过了');
+    } else {
+      alert('上传失败');
+    }
+  }
+}
+</script>
+
+</html>

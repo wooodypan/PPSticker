@@ -11,11 +11,13 @@
   .img-wrap {
     position: relative;
     display: inline-block;
-    margin: 10px 5px;
+    /*margin: 10px 5px;*/
     width: 100px;
     height: 100px;
     border: 1px solid #d9d9d9;
     overflow: hidden;
+    /*我加的*/
+    z-index: 2;
   }
 
   /* 为了让img垂直居中 */
@@ -59,18 +61,53 @@
     display: none;
   }
   </style>
+  <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/2.3.0/weui.min.css" />
+  <!-- page__hd 上下左右40内边距 
+      page__bd_spacing左右16边距  
+      page__bd左右40内边距
+      page__bd 0内边距
+      weui-btn-area margin: 48px 16px 8px;
+      段落灰色小字weui-msg__tips
+      正常字体，底部16px外边距 weui-msg__desc -->
+  <link rel="stylesheet" type="text/css" href="https://weui.io/example.css">
 </head>
 
 <body>
-  <div id="img-container"></div>
+  <!-- <div id="img-container"></div> -->
   <div>
     <!-- 用label替代input.file作为视觉上的上传交互触发器，方便样式统一和美化 -->
-    <label>
-      请选择上传文件
-      <!-- accept属性仅仅是实现了文件选择器里展示的文件类型默认过滤出指定类型，但是不会真正阻止上传别的类型，需要结合js检验 -->
-      <input type="file" id="file" multiple accept="image/*" />
-    </label>
-    <button onclick="submitFormData()">提交</button>
+    <div class="container2222">
+      <article class="weui-article">
+        <h1>请选择上传文件</h1>
+      </article>
+    </div>
+    <!-- <label> -->
+    <!-- 请选择上传文件 -->
+    <!-- accept属性仅仅是实现了文件选择器里展示的文件类型默认过滤出指定类型，但是不会真正阻止上传别的类型，需要结合js检验 -->
+    <div class="weui-cells">
+      <div id="img-container" class="weui-uploader__input-box  page__bd_spacing1" style="margin: 16px 0px 16px 16px;">
+        <input id="file" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+      </div>
+    </div>
+    <!-- <input type="file" id="file" multiple accept="image/*" /> -->
+    <!-- </label> -->
+    <!-- <button onclick="submitFormData()">提交</button> -->
+  </div>
+  <div class="weui-cells__group weui-cells__group_form">
+    <div class="weui-cells__title">图片标签，用中英文逗号分隔</div>
+    <div class="weui-cells weui-cells_form">
+      <div class="weui-cell weui-cell_active">
+        <!-- <div class="weui-cell__hd">
+          <label class="weui-label">微信号</label>
+        </div> -->
+        <div class="weui-cell__bd">
+          <input id="pptag" class="weui-input" placeholder="搞笑、开心等">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="weui-btn-area" onclick="submitFormData()">
+    <a href="javascript:" class="weui-btn weui-btn_primary" id="btnUpload">上传</a>
   </div>
 </body>
 <script type="text/javascript">
@@ -149,18 +186,21 @@ function submitFormData() {
     alert('请选择文件');
     return;
   }
+  let pptag = document.getElementById('pptag').value;
   // FFormData ie10以下不支持
   var formData = new FormData();
   uploadFiles.forEach(item => {
     formData.append('ppFiles', item);
   });
-  formData.append('pptag', '搞笑');
+  formData.append('pptag', pptag);
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/sticker/api/v1/addsticker/');
   xhr.send(formData);
   xhr.onload = function() {
-    if (this.status === 200 || this.status === 201 ||this.status == 304) {
+    if (this.status === 200 || this.status == 304) {
       alert('上传成功');
+    } else if (this.status === 201) {
+      alert('你丫的上传过了');
     } else {
       alert('上传失败');
     }

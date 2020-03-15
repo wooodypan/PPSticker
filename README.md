@@ -30,9 +30,9 @@ DATABASE_PASSWORD=12345678
 # 如果想检测文件修改自动刷新可以加上这个
 FLASK_DEBUG=1
 ```
-接下来呢？其他变量可以设置，但是run还是不行
+接下来呢？其他变量可以设置，但是直接flask run还是不行
 ##请务必设置.env文件上传路径！
-比如我的Mac是：`UPLOAD_FOLDER='/Users/pan/Downloads/iiimagepath/'`
+比如我的MacOS是：`UPLOAD_FOLDER='/Users/pan/Downloads/imagepath/'`
 
 CentOS是：`UPLOAD_FOLDER='/var/www/html/image'`
 
@@ -56,8 +56,19 @@ flask db upgrade
 pip install -r requirements.txt
 ```
 
+CentOS的nginx设置（/etc/nginx/nginx.conf文件）：
 
-运行服务器
+```
+        location /sticker/ 
+        {
+            proxy_pass http://localhost:5000;
+            proxy_set_header   Host    $host;
+            proxy_set_header   X-Real-IP   $remote_addr;
+            proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+```
+
+运行Flask后台服务
 
 ``` 
 #默认5000端口
