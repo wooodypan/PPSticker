@@ -15,7 +15,7 @@ flask 命令由 Flask 安装，而不是你的应用。为了可以使用，它�
 即FLASK_APP 环境变量用于定义如何载入应用，详见：https://dormousehole.readthedocs.io/en/latest/cli.html
 假如你的flasky.py文件里有自动以的deploy命令，那么可以这么运行
 
-```
+``` bash
 export FLASK_APP=flasky.py
 flask deploy
 ```
@@ -23,7 +23,7 @@ flask deploy
 每次输入含flask的命令你都先要输这个`export FLASK_APP=flasky.py`命令是不是很烦？
 没关系，如果嫌麻烦的话就在根目录新建一个`.env`文件然后输入以下敏感信息内容：（也可以`vim .env`然后输入`export FLASK_APP=flasky.py`保存）
 
-```
+``` bash
 FLASK_APP=flasky.py
 EMAIL=1111@qq.com
 DATABASE_PASSWORD=12345678
@@ -52,13 +52,13 @@ flask db upgrade
 
 安装所有依赖
 
-```
+``` bash
 pip install -r requirements.txt
 ```
 
 CentOS的nginx设置（/etc/nginx/nginx.conf文件）：
 
-```
+``` bash
         location /sticker/ 
         {
             proxy_pass http://localhost:5000;
@@ -68,9 +68,14 @@ CentOS的nginx设置（/etc/nginx/nginx.conf文件）：
         }
 ```
 
+CentOS 安装图片压缩工具：
+``` bash
+yum install ImageMagick
+```
+
 运行Flask后台服务
 
-``` 
+``` bash
 #默认5000端口
 export FLASK_APP=flasky.py
 flask run

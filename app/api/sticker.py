@@ -5,9 +5,10 @@ from .. import db
 from ..models import User, Sticker, Permission
 from .decorators import permission_required
 from werkzeug.utils import secure_filename#上传图片用
+from werkzeug.datastructures import FileStorage
 import os,hashlib
 from datetime import datetime
-from requests import post #,get
+from requests import post,get
 from json import loads
 
 
@@ -27,15 +28,35 @@ def allowed_file(filename):
 def addsticker():
     print('=====addsticker=====')
     if request.method == 'POST':
-        file = request.files['ppFiles']
+        ppurl = request.form['ppurl']
+        file = None
+        extension = None
+        current_time = str(datetime.now().strftime('%Y-%m-%d_%H%M%S_%f')[:-3])
+        if len(request.files):
+            file = request.files['ppFiles']
+        else:
+            extension = ppurl.split('.')[-1]
+            filename = current_time + '.' + extension
+            absolute_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            downloadFileWithRequests(ppurl, absolute_path)
+            with open(absolute_path, 'rb') as fp:
+                file = FileStorage(fp)
         pptag = request.form['pptag']
+        width = request.form['width']
+        height = request.form['height']
+        fileSize = request.form['fileSize']
         if file and allowed_file(file.filename):
             # filename = secure_filename(file.filename)
             # filename = "."+filename if "." not in filename else filename
-            extension = '.' + file.mimetype.split('/')[1]
-            filename = str(datetime.now().strftime('%Y-%m-%d_%H%M%S_%f')[:-3]) + extension
+            extension = file.mimetype.split('/')[1] if len(extension) < 2 else extension
+            filename = current_time +'.' + extension
             absolute_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            file.save(absolute_path)
+            if ppurl and len(ppurl)>1:
+                pass
+                # downloadFileWithRequests(ppurl, absolute_path)
+            else:
+                file.save(absolute_path)
+            fileSize = os.stat(absolute_path).st_size
             # file.remove
             # return '{"code":200}' 34fa38284dfe7219e0392c11da505498
             img_hash = md5_file(absolute_path)
@@ -45,11 +66,16 @@ def addsticker():
             # b'hello'.decode(encoding)
             fileExists = Sticker.query.filter_by(sid=img_hash).first()
             if fileExists is None:
+                handleBigImage(absolute_path,fileSize)
                 # smmsURL = SMMSImage.upload(image=absolute_path)
                 currentUser = g.current_user
                 newSticker = Sticker(sid=img_hash,
                                      owner_id=currentUser.id,
                                      tag=pptag,
+                                     width=width,
+                                     height=height,
+                                     fileSize=fileSize,
+                                     sinaURL=ppurl,
                                      url= request.path+filename)
                 db.session.add(newSticker)#host_url origin
                 db.session.commit()
@@ -58,10 +84,34 @@ def addsticker():
                 os.remove(absolute_path)
                 # 如果您使用的是蓝图，则url_for应该这样调用：url_for（'blueprint_name.func_name'）
                 # return fileExists.to_json()
-                return jsonify(fileExists.to_json()), 200, {'Location': 'sss'}
+                return jsonify(fileExists.to_json()), 201, {'msg': '你丫的已经上传过了'}
     # json = request.json
     # return jsonify(post.to_json()), 201, {'Location': url_for('api.get_post', id=post.id, _external=True)}
-    
+#制作略缩图    
+def handleBigImage(fileName,fileSize):
+    extension = fileName.split('.')[-1]
+    name = fileName[:-len(extension)-1]
+    print('===类型'+extension)
+    if len(extension)<3:
+    	return
+	#大于128K的图片做略缩图
+    if int(fileSize) > 128*1024:
+        if extension == 'gif':
+            os.system("convert -coalesce  '"+fileName+"[0]'  -resize '100x100>' "+name+"_thumb"+".jpg")
+        elif extension == 'jpg' or extension == 'jpeg' or extension == 'png':
+            os.system("convert -coalesce  '"+fileName+"'  -resize '100x100>' "+name+"_thumb."+extension)
+        else:
+        	#小图不处理了
+            pass
+    pass
+#服务器下载图片
+def downloadFileWithRequests(url, file_name):
+    # open in binary mode
+    with open(file_name, "wb") as file:
+        # get request
+        response = get(url)
+        # write to file
+        file.write(response.content)
 # 图片生成md5值作为唯一ID
 def md5_file(file_path):
     md5_obj = hashlib.md5()

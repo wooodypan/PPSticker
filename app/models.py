@@ -24,10 +24,12 @@ class Sticker(db.Model):
     url = db.Column(db.String(500), unique=True)
     thumbnail = db.Column(db.String(500))
     smmsURL = db.Column(db.String(100))
+    sinaURL = db.Column(db.String(100))
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     width = db.Column(db.Integer)
     height = db.Column(db.Integer)
+    fileSize = db.Column(db.Integer)
     tag = db.Column(db.String(500))
 
     #宽、高、使用次数
