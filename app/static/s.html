@@ -32,21 +32,38 @@ body {
   justify-content: center;
   align-items: center;
 }
-
+.ppimgcell {
+  height:150px;
+  flex-direction:column;
+  background-color:#fff;
+  margin:10px;
+  justify-content:flex-end;
+  align-items:center;
+  padding: 10px;
+  border-radius: 5px;
+}
 .ppcrop {
   /*width: 200px;*/
   /*height: 150px;*/
   overflow: hidden;
 }
-.stickerbg {
+.ppsticker {
   /*max-width:100%;*/
 width: 100px;
-margin: 10px;
+
 }
 .ppdesc {
-  max-width: 70px;
+  max-width: 100px;
   overflow: hidden;
   color: #666666;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  /*max-height: 50px;*/
+  max-height: 3.2em;
+  line-height: 1.6em;
+  /*word-break: break-all;*/
+  /*overflow-wrap:break-word;*/
+  /*word-wrap: break-word;*/
 }
 /* .pp_header {} */
 .pp_searchbar {
@@ -78,7 +95,7 @@ margin: 10px;
       </form>
       <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
     </div>
-    <div class="pandaflex" style="flex-wrap: wrap;align-items: center;">
+    <div class="pandaflex" style="flex-wrap: wrap;align-items: center;justify-content: center;">
       
       <panda-cell v-for="item in myhongbaolist" v-bind:panda="item" :key="item.time" @click="clickmycell(item)"></panda-cell>
     </div>
@@ -165,9 +182,9 @@ Vue.component('panda-cell', {
     }
   },
   template: `
-  <div class="pandaflex" style="height:150px;flex-direction:column;background-color:#fff;margin:10px;justify-content:center;align-items:center;">
-  <img class="stickerbg" :src="panda.url">
-  <div class="ppdesc" style="display:block;">{{panda.time}}</div>
+  <div class="pandaflex ppimgcell">
+  <img class="ppsticker pandaflex" :src="panda.url">
+  <div class="ppdesc pandaflex" style="display:block;">{{panda.tag}}</div>
   </div>
   `
 })
@@ -226,35 +243,35 @@ var app = new Vue({
       for (var i = 0; i < aaa.length; i++) {
         _this.myhongbaolist.push({ "url": aaa[i], "time": String(Math.random()) })
       }
-      return;
-      this.$indicator.open();
-      axios.get(hbapi.myhongbao, {
+      // return;
+      // this.$indicator.open();
+      axios.get('/sticker/api/v1/users/sticker/', {
           params: {
-            token: token,
-            user_id: user_id
+            // token: token,
+            // user_id: user_id
           }
         })
         .then(function(response) {
-          _this.$indicator.close();
+          // _this.$indicator.close();
           if (response.data.error) {
             _this.visible = true;
             _this.error_msg = response.data.error;
             return;
           }
-          if (typeof(response.data.hongbao) != 'object') {
-            _this.$toast('返回数据格式不对');
+          if (typeof(response.data.stickers) != 'object') {
+            // _this.$toast('返回数据格式不对');
             return;
           }
           _this.myhongbaolist.length = 0;
-          for (var i = 0; i < response.data.hongbao.length; i++) {
-            var model = _this.handleModel(response.data.hongbao[i])
-            model.is_mine = true;
+          for (var i = 0; i < response.data.stickers.length; i++) {
+            var model = response.data.stickers[i];//_this.handleModel(response.data.stickers[i])
+            // model.is_mine = true;
             _this.myhongbaolist.push(model);
           }
           // console.log('response=====' + JSON.stringify(response));
         })
         .catch(function(error) {
-          _this.$indicator.close();
+          // _this.$indicator.close();
           console.log('error=====' + error);
         });
     },

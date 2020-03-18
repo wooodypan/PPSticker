@@ -1,13 +1,13 @@
-"""empty message
+"""sticker init
 
-Revision ID: cf9ee25e5909
+Revision ID: 5ae48b37ae9e
 Revises: 51f5ccfba190
-Create Date: 2020-03-12 16:32:18.504572
+Create Date: 2020-03-18 23:15:43.316785
 
 """
 
 # revision identifiers, used by Alembic.
-revision = 'cf9ee25e5909'
+revision = '5ae48b37ae9e'
 down_revision = '51f5ccfba190'
 
 from alembic import op
@@ -22,10 +22,14 @@ def upgrade():
     sa.Column('url', sa.String(length=500), nullable=True),
     sa.Column('thumbnail', sa.String(length=500), nullable=True),
     sa.Column('smmsURL', sa.String(length=100), nullable=True),
+    sa.Column('sinaURL', sa.String(length=100), nullable=True),
     sa.Column('owner_id', sa.Integer(), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.Column('width', sa.Integer(), nullable=True),
     sa.Column('height', sa.Integer(), nullable=True),
+    sa.Column('like', sa.Integer(), nullable=True),
+    sa.Column('collect', sa.Integer(), nullable=True),
+    sa.Column('fileSize', sa.Integer(), nullable=True),
     sa.Column('tag', sa.String(length=500), nullable=True),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),

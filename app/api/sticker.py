@@ -30,8 +30,8 @@ def addsticker():
     if request.method == 'POST':
         ppurl = request.form['ppurl']
         file = None
-        extension = None
-        current_time = str(datetime.now().strftime('%Y-%m-%d_%H%M%S_%f')[:-3])
+        extension = ''
+        current_time = str(datetime.now().strftime('%Y-%m-%d_%H.%M.%S_%f')[:-3])
         if len(request.files):
             file = request.files['ppFiles']
         else:
@@ -42,6 +42,7 @@ def addsticker():
             with open(absolute_path, 'rb') as fp:
                 file = FileStorage(fp)
         pptag = request.form['pptag']
+        pptag = pptag.replace('，',',').strip()#替换逗号去空格
         width = request.form['width']
         height = request.form['height']
         fileSize = request.form['fileSize']
@@ -55,7 +56,7 @@ def addsticker():
                 pass
                 # downloadFileWithRequests(ppurl, absolute_path)
             else:
-                file.save(absolute_path)
+                file.save(absolute_path)#一定要提前创建文件夹！
             fileSize = os.stat(absolute_path).st_size
             # file.remove
             # return '{"code":200}' 34fa38284dfe7219e0392c11da505498
@@ -76,7 +77,7 @@ def addsticker():
                                      height=height,
                                      fileSize=fileSize,
                                      sinaURL=ppurl,
-                                     url= request.path+filename)
+                                     url= request.path.replace('addsticker','uploadimg')+filename)
                 db.session.add(newSticker)#host_url origin
                 db.session.commit()
                 return redirect(url_for('api.uploaded_file',filename=filename))
@@ -120,7 +121,7 @@ def md5_file(file_path):
     file_md5_id = md5_obj.hexdigest()
     return file_md5_id
 # 文件访问
-@api.route('/uploads/<filename>')
+@api.route('/uploadimg/<filename>')
 def uploaded_file(filename):
     print('==========')
     return send_from_directory(current_app.config['UPLOAD_FOLDER'],
@@ -135,26 +136,29 @@ def stickerindex():
 # http://p.agolddata.com/api/v1/user/12345
 # http://p.agolddata.com/sticker
 # http://127.0.0.1:5000/api/v1/users/12345/sticker
-@api.route('/users/<int:id>/sticker/')
-def get_user_sticker(id):
-    print('=====user=====2')
-    
-    user = User.query.get_or_404(id)
+
+# @api.route('/users/<username>/sticker/')
+# def get_user_stickers(username):
+@api.route('/users/sticker/')
+def get_user_stickers():
+    print('=====get_user_stickers=====')
+    currentUser = g.current_user
+    user = User.query.filter_by(username=currentUser.username).first_or_404()
     page = request.args.get('page', 1, type=int)
-    pagination = user.posts.order_by(Sticker.timestamp.desc()).paginate(
+    pagination = user.stickers.order_by(Sticker.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
     prev = None
     if pagination.has_prev:
-        prev = url_for('api.get_user_posts', id=id, page=page-1,
+        prev = url_for('api.get_user_stickers', id=id, page=page-1,
                        _external=True)
     next = None
     if pagination.has_next:
-        next = url_for('api.get_user_posts', id=id, page=page+1,
+        next = url_for('api.get_user_stickers', id=id, page=page+1,
                        _external=True)
     return jsonify({
-        'posts': [post.to_json() for post in posts],
+        'stickers': [post.to_json() for post in posts],
         'prev': prev,
         'next': next,
         'count': pagination.total

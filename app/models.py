@@ -29,6 +29,8 @@ class Sticker(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     width = db.Column(db.Integer)
     height = db.Column(db.Integer)
+    like = db.Column(db.Integer)
+    collect = db.Column(db.Integer)
     fileSize = db.Column(db.Integer)
     tag = db.Column(db.String(500))
 
@@ -37,6 +39,10 @@ class Sticker(db.Model):
     # owner_id = db.relationship('User', backref='role', lazy='dynamic')
     def to_json(self):
         json_post = {
+            'tag': self.tag,
+            'smmsURL': self.smmsURL,
+            'sinaURL': self.sinaURL,
+            # 'timestamp':str(self.timestamp),
             'url': self.url
         }
         return json_post
@@ -120,6 +126,8 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    stickers = db.relationship('Sticker', backref='owner', lazy='dynamic')
+
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower', lazy='joined'),
