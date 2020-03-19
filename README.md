@@ -55,7 +55,7 @@ flask db migrate -m "new table sticker"
 flask db upgrade
 ```
 
-
+如果升级数据库出问题，删掉数据库后要`flask deploy`
 
 
 

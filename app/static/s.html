@@ -32,27 +32,32 @@ body {
   justify-content: center;
   align-items: center;
 }
+
 .ppimgcell {
-  height:150px;
-  flex-direction:column;
-  background-color:#fff;
-  margin:10px;
-  justify-content:flex-end;
-  align-items:center;
+  height: 150px;
+  flex-direction: column;
+  background-color: #fff;
+  margin: 10px;
+  justify-content: flex-end;
+  align-items: center;
   padding: 10px;
   border-radius: 5px;
 }
+
 .ppcrop {
   /*width: 200px;*/
   /*height: 150px;*/
   overflow: hidden;
 }
+
 .ppsticker {
   /*max-width:100%;*/
-width: 100px;
+  width: 100px;
 
 }
+
 .ppdesc {
+  margin-top: 10px;
   max-width: 100px;
   overflow: hidden;
   color: #666666;
@@ -65,6 +70,7 @@ width: 100px;
   /*overflow-wrap:break-word;*/
   /*word-wrap: break-word;*/
 }
+
 /* .pp_header {} */
 .pp_searchbar {
   justify-content: center;
@@ -74,8 +80,7 @@ width: 100px;
 
 <body>
   <!-- ----------------------------html----------------------------- -->
-  <div id="app" class="ppcontainer">
-
+  <div id="app" class="ppcontainer pandaflex" style="flex-direction: column;">
     <div id="pp_mysticker" class="pandaflex ppcenter" style="flex-direction: column;justify-content: center;">
       <img class="" style="width: 150px;height: 150px;margin-bottom: -45px;" src="http://tva1.sinaimg.cn/bmiddle/9150e4e5gy1gciouowmmrj206o06owed.jpg">
       <!-- <div class="pandaflex" style="background-color: #fff;font-size: 28px;width: 100px;">啊啊啊</div> -->
@@ -96,9 +101,19 @@ width: 100px;
       <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
     </div>
     <div class="pandaflex" style="flex-wrap: wrap;align-items: center;justify-content: center;">
-      
       <panda-cell v-for="item in myhongbaolist" v-bind:panda="item" :key="item.time" @click="clickmycell(item)"></panda-cell>
     </div>
+    <!-- position: absolute;bottom: 0; -->
+    <!-- 置底开始 -->
+    <div class="weui-form__extra-area" style="margin-top: auto;">
+      <div class="weui-footer">
+        <p class="weui-footer__links">
+          <a href="/sticker" class="weui-footer__link">点我注册上传自己的表情</a>
+        </p>
+        <p class="weui-footer__text">Copyright © 2019-2020 Panda Studio</p>
+      </div>
+    </div>
+    <!-- 置底结束 -->
   </div>
 </body>
 <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script>
@@ -112,7 +127,7 @@ $(function() {
   $pp_mysticker.on('click', function() {
     let str = window.location.href
     var res = str.substring(0, str.length - 6);
-    let newURL = res +"sadd.html"
+    let newURL = res + "sadd.html"
     window.location.href = newURL
   });
   var $searchBar = $('#searchBar'),
@@ -241,7 +256,7 @@ var app = new Vue({
         'http://tva1.sinaimg.cn/bmiddle/006i7geoly1fapbjwivv8j30k00k0wfe0.jpg'
       ]
       for (var i = 0; i < aaa.length; i++) {
-        _this.myhongbaolist.push({ "url": aaa[i], "time": String(Math.random()) })
+        _this.myhongbaolist.push({ "url": aaa[i], "tag": "测试数据", "time": String(Math.random()) })
       }
       // return;
       // this.$indicator.open();
@@ -264,7 +279,7 @@ var app = new Vue({
           }
           _this.myhongbaolist.length = 0;
           for (var i = 0; i < response.data.stickers.length; i++) {
-            var model = response.data.stickers[i];//_this.handleModel(response.data.stickers[i])
+            var model = response.data.stickers[i]; //_this.handleModel(response.data.stickers[i])
             // model.is_mine = true;
             _this.myhongbaolist.push(model);
           }
@@ -277,7 +292,9 @@ var app = new Vue({
     },
 
     handleModel(model) {
-
+      var model = model;
+      model.tag = '测试数据';
+      return model;
     },
     tableRowClassName({ row, rowIndex }) {
 
