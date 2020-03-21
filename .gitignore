@@ -1,6 +1,11 @@
 # my folder
 ttttt
-
+# pycharm生成的文件  User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
 
 *.py[cod]
 

@@ -125,6 +125,13 @@ config.py 存储配置;
 
 manage.py 用于启动程序以及其他的程序任务。
 
+```bash
+# 一下子升级所有可升级的第三方库
+pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+```
+
+
+
 
 
 # 理解
