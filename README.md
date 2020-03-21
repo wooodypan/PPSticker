@@ -105,6 +105,10 @@ API上传表情：http://127.0.0.1:5000/static/sadd.html
 
 若想修改数据库表字段，需要更新`models.py`和`manage.py`里的东东，然后`flask db migrate -m "Initial migration" && flask db upgrade`
 
+## 参考资料
+
+flask-sqlalchemy使用：http://www.pythondoc.com/flask-sqlalchemy/queries.html
+
 # 其他
 
 VSCode调试配置：https://youtu.be/UXqiVe6h3lA

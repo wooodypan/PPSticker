@@ -330,6 +330,9 @@ var app = new Vue({
     },
 
     stickerSearch(text) {
+      if (text.length < 1) {
+        return;
+      }
       var _this = this;
       axios.get('/sticker/api/v1/searchsticker/', {
           params: {

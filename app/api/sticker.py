@@ -164,9 +164,21 @@ def get_user_stickers():
         'count': pagination.total
     })
     
-    
-    
-    
+
+
+@api.route('/searchsticker/')
+def search_user_stickers():
+    print('=====get_user_stickers=====')
+    currentUser = g.current_user
+    user = User.query.filter_by(username=currentUser.username).first_or_404()
+    # page = request.args.get('page', 1, type=int)
+    search_text = request.args.get('searchText', ' ', type=str)
+    if
+    pagination = Sticker.query.filter(Sticker.tag.contains(search_text)).all()
+    return jsonify({
+        'stickers': [stk.to_json() for stk in pagination]
+    })
+
 class SMMSImage(object):
     #https://github.com/skycity233/SMPIC/blob/67ea54f5ba2f9c1e787ca4de1b0cba0e990597cb/Smms.py
     @classmethod
