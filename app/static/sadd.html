@@ -128,7 +128,15 @@
   <div class="weui-btn-area" onclick="submitFormData()">
     <a href="javascript:" class="weui-btn weui-btn_primary" id="btnUpload">上传</a>
   </div>
-
+  <!--BEGIN toast-->
+  <div id="toast" style="display: none;">
+    <div class="weui-mask_transparent"></div>
+    <div class="weui-toast">
+      <i class="weui-icon-success-no-circle weui-icon_toast"></i>
+      <p class="weui-toast__content">上传成功</p>
+    </div>
+  </div>
+  <!--end toast-->
   <!-- 置底 -->
   <div class="weui-form__extra-area" style="margin-top: auto;">
     <div class="weui-footer">
@@ -138,8 +146,9 @@
       <p class="weui-footer__text">Copyright © 2019-2020 Panda Studio</p>
     </div>
   </div>
-  
 </body>
+<!-- <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.min.js"></script> -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/Tencent/weui@master/src/example/zepto.min.js"></script>
 <script type="text/javascript">
 // 用于记录上传的所有文件
 var uploadFiles = [];
@@ -261,7 +270,16 @@ function submitFormData() {
   // https://developer.mozilla.org/zh-CN/docs/Web/API/File/Using_files_from_web_applications#Example.3A_Using_object_URLs_to_display_images
   xhr.onload = function() {
     if (this.status === 200 || this.status == 304) {
-      alert('上传成功');
+      var $toast = $('#toast');
+      // $('#showToast').on('click', function(){
+      if ($toast.css('display') != 'none') return;
+
+      $toast.fadeIn(100);
+      setTimeout(function() {
+        $toast.fadeOut(100);
+      }, 2000);
+      // });
+      // alert('上传成功');
     } else if (this.status === 201) {
       alert('你丫的上传过了');
     } else {

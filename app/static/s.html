@@ -63,7 +63,7 @@ body {
   overflow: hidden;
   color: #666666;
   text-overflow: ellipsis;
-  font-size: 14px;
+  font-size: 12px;
   /*max-height: 50px;*/
   max-height: 3.2em;
   line-height: 1.6em;
@@ -88,6 +88,17 @@ body {
   text-align: center;*/
   border-top: 1px solid var(--weui-FG-3);
 }
+
+.ppgif {
+  background-color: #fdc4c4;
+  color: #fff;
+  font-size: 12px;
+  padding: 0px 5px;
+  border-radius: 2px;
+  /*align-self: flex-end;*/
+
+  /*flex: 1 0 10%;*/
+}
 </style>
 
 <body>
@@ -102,7 +113,7 @@ body {
       <form class="weui-search-bar__form">
         <div class="weui-search-bar__box">
           <i class="weui-icon-search"></i>
-          <input type="search" v-model="ppsearchText" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required />
+          <input type="search" v-model="ppsearchText" class="weui-search-bar__input" id="searchInput" placeholder="搜索你的表情Tag" required />
           <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
         </div>
         <label class="weui-search-bar__label" id="searchText">
@@ -113,7 +124,14 @@ body {
       <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
     </div>
     <div class="pandaflex" style="flex-wrap: wrap;align-items: center;justify-content: center;">
-      <panda-cell v-for="item in searchlist" v-bind:panda="item" :key="item.time" @click="clickmycell(item)"></panda-cell>
+      <!--       <div class="pandaflex ppimgcell" @click="clickmycell('2333')">
+        <div style="display: flex;flex-grow: 1;width: 100%;align-items: flex-start;justify-content: flex-end;">
+          <div class="ppgif">Gif</div>
+        </div>
+        <img class="ppsticker pandaflex" src="https://i.loli.net/2020/03/10/Cg27IaZuLXh5w6O.jpg">
+        <div class="ppdesc pandaflex" style="display:block;">121212</div>
+      </div> -->
+      <panda-cell v-for="item in searchlist" v-bind:panda="item" :key="item.time" @click.native="clickmycell(item)"></panda-cell>
     </div>
     <!-- 我的表情 -->
     <div class="ppline"></div>
@@ -121,7 +139,7 @@ body {
       <h1 class="page__title">我的表情😘</h1>
     </div>
     <div class="pandaflex" style="flex-wrap: wrap;align-items: center;justify-content: center;">
-      <panda-cell v-for="item in myhongbaolist" v-bind:panda="item" :key="item.time" @click="clickmycell(item)"></panda-cell>
+      <panda-cell v-for="item in myhongbaolist" v-bind:panda="item" :key="item.time" @click.native="clickmycell(item)"></panda-cell>
     </div>
     <!-- 热门表情开始 -->
     <div class="ppline"></div>
@@ -129,7 +147,7 @@ body {
       <h1 class="page__title">热门表情🔥</h1>
     </div>
     <div class="pandaflex" style="flex-wrap: wrap;align-items: center;justify-content: center;">
-      <panda-cell v-for="item in hotstickerlist" v-bind:panda="item" :key="item.time" @click="clickmycell(item)"></panda-cell>
+      <panda-cell v-for="item in hotstickerlist" v-bind:panda="item" :key="item.time" @click.native="clickmycell(item)"></panda-cell>
     </div>
     <!-- 热门表情结束 -->
     <!-- position: absolute;bottom: 0; -->
@@ -143,9 +161,32 @@ body {
       </div>
     </div>
     <!-- 置底结束 -->
+    <div id="dialogs">
+      <!--BEGIN dialog1-->
+      <div class="js_dialog" id="iosDialog1" style="display: none;">
+        <div class="weui-mask"></div>
+        <div id="js_dialog_1" class="weui-half-screen-dialog">
+          <div class="weui-half-screen-dialog__hd">
+            <div class="weui-half-screen-dialog__hd__side">
+              <!-- <button class="weui-icon-btn">关闭<i class="weui-icon-close-thin"></i></button> -->
+            </div>
+            <div class="weui-half-screen-dialog__hd__main">
+              <strong class="weui-half-screen-dialog__title">长按Gif发送</strong>
+            </div>
+          </div>
+          <div class="weui-half-screen-dialog__bd">
+            <br>
+            <img style="display: block;margin: 0 auto;" :src="this.current_url">
+            <br>
+          </div>
+        </div>
+      </div>
+      <!--END dialog1-->
+    </div>
   </div>
 </body>
-<script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script>
+<!-- <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script> -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/Tencent/weui@master/src/example/zepto.min.js"></script>
 <script src="https://cdn.bootcss.com/vue/2.5.7/vue.min.js"></script>
 <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
 <!-- <script src="//cdn.bootcss.com/eruda/1.4.2/eruda.min.js"></script>
@@ -154,10 +195,13 @@ body {
 $(function() {
   var $pp_mysticker = $('#pp_mysticker');
   $pp_mysticker.on('click', function() {
+    window.location.href = window.location.origin + '/sticker/static/sadd.html';
+    /*
     let str = window.location.href
     var res = str.substring(0, str.length - 6);
     let newURL = res + "sadd.html"
     window.location.href = newURL
+    */
   });
   var $searchBar = $('#searchBar'),
     $searchResult = $('#searchResult'),
@@ -226,17 +270,23 @@ Vue.component('panda-cell', {
     }
   },
   template: `
-  <div class="pandaflex ppimgcell">
-  <img class="ppsticker pandaflex" :src="panda.url">
+  <div class="pandaflex ppimgcell" @click="clickmycell(panda)">
+  <div v-if="panda.thumbnail.slice(-3) === 'gif' " style="display: flex;flex-grow: 1;width: 100%;align-items: flex-start;justify-content: flex-end;">
+        <div class="ppgif">Gif</div>
+          
+        </div>
+  
+<img class="ppsticker pandaflex" :src="panda.thumbnail">
   <div class="ppdesc pandaflex" style="display:block;">{{panda.tag}}</div>
   </div>
   `
 })
 var app = new Vue({
+
   el: '#app',
   data: {
     message: '2333',
-    ppsearchText: '123',
+    ppsearchText: '',
     visible: false,
     input_account: '',
     input_password: '',
@@ -254,7 +304,7 @@ var app = new Vue({
     xiaosongtoken: '',
     xiaosongstatus: '设置小松主页链接（未设置）',
     xiaosong_url: '',
-    qrcodeimg: '',
+    current_url: 'http://tva2.sinaimg.cn/bmiddle/9150e4e5ly1fhbhl2y9cig205k05kn2i.gif',
     location: false,
     //默认选择的值
     lucky_num: ''
@@ -294,7 +344,7 @@ var app = new Vue({
         'http://tva1.sinaimg.cn/bmiddle/006i7geoly1fapbjwivv8j30k00k0wfe0.jpg'
       ]
       for (var i = 0; i < aaa.length; i++) {
-        _this.hotstickerlist.push({ "url": aaa[i], "tag": "测试数据", "time": String(Math.random()) })
+        _this.hotstickerlist.push({ "thumbnail": aaa[i], "tag": "测试数据", "time": String(Math.random()) })
       }
       // return;
       // this.$indicator.open();
@@ -317,7 +367,7 @@ var app = new Vue({
           }
           _this.myhongbaolist.length = 0;
           for (var i = 0; i < response.data.stickers.length; i++) {
-            var model = response.data.stickers[i]; //_this.handleModel(response.data.stickers[i])
+            var model = _this.handleModel(response.data.stickers[i])
             // model.is_mine = true;
             _this.myhongbaolist.push(model);
           }
@@ -353,7 +403,7 @@ var app = new Vue({
           }
           _this.searchlist.length = 0;
           for (var i = 0; i < response.data.stickers.length; i++) {
-            var model = response.data.stickers[i]; //_this.handleModel(response.data.stickers[i])
+            var model = _this.handleModel(response.data.stickers[i])
             // model.is_mine = true;
             _this.searchlist.push(model);
           }
@@ -365,9 +415,14 @@ var app = new Vue({
         });
     },
     handleModel(model) {
-      var model = model;
-      model.tag = '测试数据';
-      return model;
+      var newmodel = model;
+      if (model.thumbnail && model.thumbnail.length > 0) {
+        newmodel.thumbnail = '/sticker/api/v1/uploadimg/' + model.thumbnail;
+      } else {
+        newmodel.thumbnail = model.url;
+      }
+      // model.tag = '测试数据';
+      return newmodel;
     },
     tableRowClassName({ row, rowIndex }) {
 
@@ -397,8 +452,12 @@ var app = new Vue({
 
     },
     clickmycell(model, param2, param3) {
-      console.log('====');
-
+      this.current_url = model.url;
+      console.log('====' + model);
+      var $dialog1 = $('#js_dialog_1'),
+        $iosDialog1 = $('#iosDialog1');
+      $iosDialog1.fadeIn(200);
+      $dialog1.addClass('weui-half-screen-dialog_show');
     },
     clickMyRow(model, param2, param3) {
 

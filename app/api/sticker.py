@@ -67,7 +67,7 @@ def addsticker():
             # b'hello'.decode(encoding)
             fileExists = Sticker.query.filter_by(sid=img_hash).first()
             if fileExists is None:
-                handleBigImage(absolute_path,fileSize)
+                small_image = handleBigImage(absolute_path,fileSize)
                 # smmsURL = SMMSImage.upload(image=absolute_path)
                 currentUser = g.current_user
                 newSticker = Sticker(sid=img_hash,
@@ -77,7 +77,8 @@ def addsticker():
                                      height=height,
                                      fileSize=fileSize,
                                      sinaURL=ppurl,
-                                     url= request.path.replace('addsticker','uploadimg')+filename)
+                                     thumbnail=small_image,
+                                     url= filename)#request.path.replace('addsticker','uploadimg')+filename)
                 db.session.add(newSticker)#host_url origin
                 db.session.commit()
                 return redirect(url_for('api.uploaded_file',filename=filename))
@@ -88,23 +89,29 @@ def addsticker():
                 return jsonify(fileExists.to_json()), 201, {'msg': '你丫的已经上传过了'}
     # json = request.json
     # return jsonify(post.to_json()), 201, {'Location': url_for('api.get_post', id=post.id, _external=True)}
-#制作略缩图    
+#制作略缩图
 def handleBigImage(fileName,fileSize):
     extension = fileName.split('.')[-1]
     name = fileName[:-len(extension)-1]
+    small_image = ''
     print('===类型'+extension)
     if len(extension)<3:
-    	return
+    	return small_image
 	#大于128K的图片做略缩图
     if int(fileSize) > 128*1024:
         if extension == 'gif':
-            os.system("convert -coalesce  '"+fileName+"[0]'  -resize '100x100>' "+name+"_thumb"+".jpg")
+            small_image = name+"_thumb"+".jpg"
+            os.system("convert -coalesce  '"+fileName+"[0]'  -resize '100x100>' "+small_image)
+            return small_image.split('/')[-1]
         elif extension == 'jpg' or extension == 'jpeg' or extension == 'png':
-            os.system("convert -coalesce  '"+fileName+"'  -resize '100x100>' "+name+"_thumb."+extension)
+            small_image = name+"_thumb."+extension
+            os.system("convert -coalesce  '"+fileName+"'  -resize '100x100>' "+small_image)
+            return small_image.split('/')[-1]
         else:
         	#小图不处理了
             pass
-    pass
+    return small_image
+
 #服务器下载图片
 def downloadFileWithRequests(url, file_name):
     # open in binary mode
@@ -165,16 +172,18 @@ def get_user_stickers():
     })
     
 
-
+# http://127.0.0.1:5000/sticker/api/v1/searchsticker/?searchText=%E5%8D%A7%E6%A7%BD
 @api.route('/searchsticker/')
 def search_user_stickers():
     print('=====get_user_stickers=====')
     currentUser = g.current_user
     user = User.query.filter_by(username=currentUser.username).first_or_404()
-    # page = request.args.get('page', 1, type=int)
+    page = request.args.get('page', 1, type=int)
+    count = 10
+    page_num = (page-1) * count
     search_text = request.args.get('searchText', ' ', type=str)
-    if
-    pagination = Sticker.query.filter(Sticker.tag.contains(search_text)).all()
+    # if
+    pagination = Sticker.query.filter(Sticker.tag.contains(search_text)).offset(page_num).limit(count).all()
     return jsonify({
         'stickers': [stk.to_json() for stk in pagination]
     })

@@ -42,6 +42,7 @@ class Sticker(db.Model):
             'tag': self.tag,
             'smmsURL': self.smmsURL,
             'sinaURL': self.sinaURL,
+            'thumbnail':self.thumbnail,
             # 'timestamp':str(self.timestamp),
             'url': self.url
         }
