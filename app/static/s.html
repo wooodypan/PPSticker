@@ -176,7 +176,7 @@ body {
           </div>
           <div class="weui-half-screen-dialog__bd">
             <br>
-            <img style="display: block;margin: 0 auto;" :src="this.current_url">
+            <img style="display: block;margin: 0 auto;max-width: 100%;" :src="this.current_url">
             <br>
           </div>
         </div>
@@ -193,6 +193,15 @@ body {
 <script>eruda.init();</script> -->
 <script type="text/javascript">
 $(function() {
+  var $dialog1 = $('#js_dialog_1'),
+    $iosDialog1 = $('#iosDialog1');
+
+  $('#dialogs').on('click', '.weui-mask', function() {
+    $(this).parents('.js_dialog').fadeOut(200);
+    $dialog1.removeClass('weui-half-screen-dialog_show');
+  });
+
+
   var $pp_mysticker = $('#pp_mysticker');
   $pp_mysticker.on('click', function() {
     window.location.href = window.location.origin + '/sticker/static/sadd.html';
@@ -271,7 +280,7 @@ Vue.component('panda-cell', {
   },
   template: `
   <div class="pandaflex ppimgcell" @click="clickmycell(panda)">
-  <div v-if="panda.thumbnail.slice(-3) === 'gif' " style="display: flex;flex-grow: 1;width: 100%;align-items: flex-start;justify-content: flex-end;">
+  <div v-if="panda.type === 'gif' " style="display: flex;flex-grow: 1;width: 100%;align-items: flex-start;justify-content: flex-end;">
         <div class="ppgif">Gif</div>
           
         </div>
@@ -324,13 +333,11 @@ var app = new Vue({
   mounted() {
     var _this = this;
     this.getMyHB();
+    this.hotSticker()
     console.log('mounted ==')
   },
   methods: {
-
-    getMyHB() {
-      var _this = this;
-
+    testData() {
       var aaa = ['http://tva1.sinaimg.cn/bmiddle/005A0PMely1fsbvq40qocg305a05ajsk.gif',
         'http://tva1.sinaimg.cn/bmiddle/005J4OU5ly1gbxgbl42z8j306y06y0tc.jpg', 'http://tva1.sinaimg.cn/bmiddle/86883a42gy1flkzbvue8hg206o05e3yl.gif',
         'http://tva1.sinaimg.cn/bmiddle/006i8XEzgy1fgcchivx21j30j60j6aaq.jpg',
@@ -346,7 +353,11 @@ var app = new Vue({
       for (var i = 0; i < aaa.length; i++) {
         _this.hotstickerlist.push({ "thumbnail": aaa[i], "tag": "测试数据", "time": String(Math.random()) })
       }
-      // return;
+    },
+    getMyHB() {
+      var _this = this;
+
+
       // this.$indicator.open();
       axios.get('/sticker/api/v1/users/sticker/', {
           params: {
@@ -414,6 +425,34 @@ var app = new Vue({
           console.log('error=====' + error);
         });
     },
+    hotSticker () {
+      var _this = this;
+      axios.get('/sticker/api/v1/hotsticker/', {
+          params: {
+            
+          }
+        })
+        .then(function(response) {
+          if (response.data.error) {
+            _this.visible = true;
+            _this.error_msg = response.data.error;
+            return;
+          }
+          if (typeof(response.data.stickers) != 'object') {
+            return;
+          }
+          _this.hotstickerlist.length = 0;
+          for (var i = 0; i < response.data.stickers.length; i++) {
+            var model = _this.handleModel(response.data.stickers[i])
+            _this.hotstickerlist.push(model);
+          }
+          // console.log('response=====' + JSON.stringify(response));
+        })
+        .catch(function(error) {
+          // _this.$indicator.close();
+          console.log('error=====' + error);
+        });
+    },
     handleModel(model) {
       var newmodel = model;
       if (model.thumbnail && model.thumbnail.length > 0) {
@@ -421,6 +460,7 @@ var app = new Vue({
       } else {
         newmodel.thumbnail = model.url;
       }
+      newmodel.type = newmodel.url.slice(-3)
       // model.tag = '测试数据';
       return newmodel;
     },
@@ -458,6 +498,18 @@ var app = new Vue({
         $iosDialog1 = $('#iosDialog1');
       $iosDialog1.fadeIn(200);
       $dialog1.addClass('weui-half-screen-dialog_show');
+      axios.get('/sticker/api/v1/clicksticker/', {
+          params: {
+            sid: model.sid
+            // user_id: user_id
+          }
+        })
+        .then(function(response) {
+          console.log('response===clicksticker==' + JSON.stringify(response));
+        })
+        .catch(function(error) {
+          console.log('error===clicksticker==' + error);
+        });
     },
     clickMyRow(model, param2, param3) {
 

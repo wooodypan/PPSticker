@@ -138,12 +138,9 @@ def uploaded_file(filename):
 @api.route('/indexs')
 def stickerindex():
     return current_app.send_static_file('s.html')
-# http://127.0.0.1:5000/api/v1/users/12345/sticker
-# http://p.agolddata.com/sticker/api/v1/user/12345/sticker
-# http://p.agolddata.com/api/v1/user/12345
-# http://p.agolddata.com/sticker
-# http://127.0.0.1:5000/api/v1/users/12345/sticker
 
+
+# http://127.0.0.1:5000/sticker/api/v1/users/sticker/
 # @api.route('/users/<username>/sticker/')
 # def get_user_stickers(username):
 @api.route('/users/sticker/')
@@ -182,12 +179,39 @@ def search_user_stickers():
     count = 10
     page_num = (page-1) * count
     search_text = request.args.get('searchText', ' ', type=str)
-    # if
     pagination = Sticker.query.filter(Sticker.tag.contains(search_text)).offset(page_num).limit(count).all()
     return jsonify({
         'stickers': [stk.to_json() for stk in pagination]
     })
 
+@api.route('/hotsticker/')
+def hot_sticker():
+    print('=====hot_sticker=====')
+    page = request.args.get('page', 1, type=int)
+    count = 50
+    page_num = (page-1) * count
+    # search_text = request.args.get('searchText', ' ', type=str)
+    pagination = Sticker.query.order_by(Sticker.click_num.desc()).limit(count).all()
+    return jsonify({
+        'stickers': [stk.to_json() for stk in pagination]
+    })
+
+# http://127.0.0.1:5000/sticker/api/v1/clicksticker/?sid=d3b67ed7fff78c85ef890fab1202d6ed
+@api.route('/clicksticker/')
+def click_sticker():
+    print('=====clicksticker=====')
+    current_user = g.current_user
+    user = User.query.filter_by(username=current_user.username).first_or_404()
+    sid = request.args.get('sid', '', type=str)
+    # pagination = Sticker.query.filter(Sticker.sid.is_(sid)).first()
+    pagination = Sticker.query.filter_by(sid=sid).first()
+    if pagination.click_num is None:
+        pagination.click_num = 0
+    pagination.click_num = pagination.click_num + 1
+    db.session.commit()
+    return jsonify({
+        'ppmsg': 'good work'
+    })
 class SMMSImage(object):
     #https://github.com/skycity233/SMPIC/blob/67ea54f5ba2f9c1e787ca4de1b0cba0e990597cb/Smms.py
     @classmethod

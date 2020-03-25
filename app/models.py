@@ -29,8 +29,9 @@ class Sticker(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     width = db.Column(db.Integer)
     height = db.Column(db.Integer)
-    like = db.Column(db.Integer)
-    collect = db.Column(db.Integer)
+    like = db.Column(db.Integer, default=0)
+    collect = db.Column(db.Integer, default=0)
+    click_num = db.Column(db.Integer, default=0)
     fileSize = db.Column(db.Integer)
     tag = db.Column(db.String(500))
 
@@ -43,6 +44,8 @@ class Sticker(db.Model):
             'smmsURL': self.smmsURL,
             'sinaURL': self.sinaURL,
             'thumbnail':self.thumbnail,
+            'sid': self.sid,
+            'click_num':self.click_num,
             # 'timestamp':str(self.timestamp),
             'url': self.url
         }

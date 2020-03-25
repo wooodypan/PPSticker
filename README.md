@@ -103,7 +103,21 @@ API上传表情：http://127.0.0.1:5000/static/sadd.html
 
 # 后期更新维护及自定义
 
-若想修改数据库表字段，需要更新`models.py`和`manage.py`里的东东，然后`flask db migrate -m "Initial migration" && flask db upgrade`
+若想修改数据库表字段，需要更新`models.py`和`manage.py`里的东东，然后`flask db migrate -m "Initial migration" && flask db upgrade`，
+注意！！！如果此时出现了`sqlite3.OperationalError) database is locked`错误，请把你的断点走完，再执行`flask db upgrade`
+
+数据库的字段修改：
+
+```bash
+# 如果flask db downgrade 出了问题，那么
+flask db history
+5ae48b37ae9e -> 7d57677c6b19 (head), sticker click num
+51f5ccfba190 -> 5ae48b37ae9e, sticker init
+修改sqlite数据库的的`alembic_version`值到上一个值`5ae48b37ae9e`
+然后删除`migrations/versions`文件夹里面最新的py文件就行
+```
+
+
 
 ## 参考资料
 
@@ -148,6 +162,19 @@ class User(UserMixin, db.Model):
 
 class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    
+    
+#contains()    
+#venv/lib/python3.7/site-packages/sqlalchemy/sql/operators.py
+
+#offset()
+#venv/lib/python3.7/site-packages/sqlalchemy/orm/query.py:3141
+
+#all()
+#venv/lib/python3.7/site-packages/sqlalchemy/orm/query.py:3227
+
+
 
 ```
 
