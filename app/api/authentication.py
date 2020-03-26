@@ -1,4 +1,5 @@
-from flask import g, jsonify
+from flask import g, jsonify,\
+request
 from flask_httpauth import HTTPBasicAuth
 from ..models import User
 from . import api
@@ -6,9 +7,15 @@ from .errors import unauthorized, forbidden
 
 auth = HTTPBasicAuth()
 
+# 临时排除某些API的授权
+def exclude():
+    return 'hotsticker' in request.path or '/uploadimg/' in request.path
 
+#为了能够使用令牌验证请求，除了普通的凭据之外，还要接受令牌
 @auth.verify_password
 def verify_password(email_or_token, password):
+    if exclude():
+        return True
     if email_or_token == '':
         return False
     if password == '':
@@ -31,6 +38,8 @@ def auth_error():
 @api.before_request
 @auth.login_required
 def before_request():
+    if exclude():
+        return
     if not g.current_user.is_anonymous and \
             not g.current_user.confirmed:
         return forbidden('Unconfirmed account')
