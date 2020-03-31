@@ -52,12 +52,12 @@ def get_my_token():
     password = request.json['password']
     user = User.query.filter_by(email=username.lower()).first()
     if not user:
-        return jsonify({'error':'user not exist'})
+        return jsonify({'error':'user not exist','message':'user not exist'})
     if user.verify_password(password):
         return jsonify({'token': user.generate_auth_token(
         expiration=360), 'expiration': 360})
     else:
-        return jsonify({'error':''})
+        return jsonify({'error':'user not exist','message':'user not exist'})
 
 
 # flask_httpauth --> login_required 如果模板登录了，会先走auth/views.py里面的before_request(),再走这个

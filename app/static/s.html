@@ -99,15 +99,35 @@ body {
 
   /*flex: 1 0 10%;*/
 }
+
+.pptopright {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  height: 29px;
+}
 </style>
 
 <body>
   <!-- ----------------------------html----------------------------- -->
   <div id="app" class="ppcontainer pandaflex" style="flex-direction: column;">
-    <div id="pp_mysticker" class="pandaflex ppcenter" style="flex-direction: column;justify-content: center;">
-      <img class="" style="width: 150px;height: 150px;margin-bottom: -45px;" src="http://tva1.sinaimg.cn/bmiddle/9150e4e5gy1gciouowmmrj206o06owed.jpg">
+    <div class="pandaflex ppcenter page__bd_spacing" style="flex-direction: column;justify-content: center;">
+      <img class="" id="pp_mysticker" style="width: 150px;height: 150px;margin-bottom: -45px;" src="http://tva1.sinaimg.cn/bmiddle/9150e4e5gy1gciouowmmrj206o06owed.jpg">
       <!-- <div class="pandaflex" style="background-color: #fff;font-size: 28px;width: 100px;">啊啊啊</div> -->
       <p style="background-color: #fff;font-size: 28px;">我的表情</p>
+      <!-- <div class="weui-flex js_category" id="js_category"> -->
+      <img class="pptopright js_category" @click="clickmymenu('2333')" src="https://weui.io/images/icon_nav_form.png" alt="">
+      <!-- </div> -->
+      <div class="weui-skin_android" id="androidActionsheet" style="display: none;">
+        <div class="weui-mask"></div>
+        <div class="weui-actionsheet">
+          <div class="weui-actionsheet__menu">
+            <div class="weui-actionsheet__cell" @click="login('2333')">{{this.username}}</div>
+            <!-- <div class="weui-actionsheet__cell">注册</div> -->
+            <div class="weui-actionsheet__cell" @click="goto_upload()">上传图片🏞</div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="weui-search-bar pp_searchbar" id="searchBar">
       <form class="weui-search-bar__form">
@@ -186,6 +206,7 @@ body {
   </div>
 </body>
 <!-- <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script> -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/Tencent/weui@master/src/example/zepto.min.js"></script>
 <script src="https://cdn.bootcss.com/vue/2.5.7/vue.min.js"></script>
 <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
@@ -311,7 +332,7 @@ var app = new Vue({
     user_info: { user_id: 'user', label: '1', image: 'https://tvax1.sinaimg.cn/crop.7.8.500.500.180/c0184b30ly8fr8v3lmzg5j20e80e8dhm.jpg' },
     selected: '2',
     xiaosongtoken: '',
-    xiaosongstatus: '设置小松主页链接（未设置）',
+    username: '登录',
     xiaosong_url: '',
     current_url: 'http://tva2.sinaimg.cn/bmiddle/9150e4e5ly1fhbhl2y9cig205k05kn2i.gif',
     location: false,
@@ -332,6 +353,25 @@ var app = new Vue({
   },
   mounted() {
     var _this = this;
+    // axios.post('/sticker/api/v1/getmytoken/', {
+    //     'username': 'wooodypan@gmail.com',
+    //     'password': 'Pan@9998'
+    //   })
+    //   .then(function(response) {
+    //     console.log(response)
+    //     // _this.$toast(response.data.message);
+    //     if (response.data.error) {
+    //       return;
+    //     }
+    //     Cookies.set('sticker_token', response.data.token)
+
+    //   })
+    //   .catch(function(error) {});
+    // return
+    if (Cookies.get('sticker_email')) {
+      this.username = Cookies.get('sticker_email');
+    }
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + Cookies.get('sticker_token');
     this.getMyHB();
     this.hotSticker()
     console.log('mounted ==')
@@ -455,6 +495,9 @@ var app = new Vue({
     },
     handleModel(model) {
       var newmodel = model;
+      if (model.url.split('uploadimg').length == 1) {
+        model.url = '/sticker/api/v1/uploadimg/' + model.url;
+      }
       if (model.thumbnail && model.thumbnail.length > 0) {
         newmodel.thumbnail = '/sticker/api/v1/uploadimg/' + model.thumbnail;
       } else {
@@ -472,13 +515,12 @@ var app = new Vue({
     },
 
 
-    init() {
-      //do something
-      console.log('页面加载完毕');
+    login() {
+      console.log('login');
+      window.location.href = window.location.origin + '/sticker/static/login.html';
     },
-    mounted() {
-      //do something
-      console.log('页面加载完毕');
+    goto_upload() {
+      window.location.href = window.location.origin + '/sticker/static/sadd.html';
     },
     handleClick(tab, event) {
       // console.log(tab, event);
@@ -488,9 +530,19 @@ var app = new Vue({
 
       }
     },
-    login_action: function() {
+    clickmymenu: function() {
+      console.log('clickmymenu');
+      var $androidActionSheet = $('#androidActionsheet');
+      var $androidMask = $androidActionSheet.find('.weui-mask');
 
+      // $("#showAndroidActionSheet").on('click', function(){
+      $androidActionSheet.fadeIn(200);
+      $androidMask.on('click', function() {
+        $androidActionSheet.fadeOut(200);
+      });
+      // });
     },
+
     clickmycell(model, param2, param3) {
       this.current_url = model.url;
       console.log('====' + model);

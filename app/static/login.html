@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <style type="text/css">
+    .logo {
+      height: 100px;
+      width: 100%;
+      margin: 0 auto 20px;
+      background-size: 100% 100px;
+      /*background-image: url(http://panway.b0.upaiyun.com/resource/hongbao/img_openeye.png);*/
+    }
+
+    #go {
+      width: 290px;
+      /*height: 44px; */
+      /*line-height: 44px;*/
+      background: #146fdf;
+      /*margin: 0 auto;*/
+      width: 260px;
+      margin-left: auto;
+      margin-right: auto;
+      /*border: none;*/
+      /*border-radius: 4px;*/
+      color: #fff;
+      /*font-size: 16px;*/
+      /*margin-top: 15px;*/
+      /*display: block;*/
+    }
+
+    #switch {
+      width: 290px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <el-dialog :visible.sync="visible" title="登录失败">
+      <p>{{ error_msg }}</p>
+    </el-dialog>
+
+    <div id="logo" class="logo" :style="{backgroundImage:`url(${backgroundImage})`}"></div>
+
+    <form method="post" class="am-form">
+      <el-input v-model="input_account" placeholder="请输入账号" value='136**' maxlength=66></el-input>
+      <br>
+      <el-input type="password" v-model="input_password" placeholder="请输入密码" v-on:focus="onFocus" v-on:blur="lostFocus"></el-input>
+      <br>
+
+      <br>
+
+    </form>
+    <div class="am-cf" style="width: 300px;margin: 0 auto;">
+      <el-button v-on:click="login_action" id='go'>登录</el-button>
+    </div>
+    <div id="switch">
+      <!-- <div id="swicth_login" onclick="pt._switch();" style="display: none;"> 快速登录历史帐号 </div> -->
+      <div id="zc_feedback" style="width: 290px;position: relative;margin-top: 15px;overflow: hidden;">
+        <!-- <span id="zc" style="float: right;" onclick="window.open('https\x3A\x2F\x2Fssl.ptlogin2.qq.com\x2Fj_newreg_url')">注册新帐号</span>  -->
+        <el-button v-on:click="reverseMessage">注册新帐号</el-button>
+        <el-button v-on:click="contactUs">忘了密码？</el-button>
+      </div>
+      
+    </div>
+
+
+
+  </div>
+
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- <script src="hongbao_tool.js"></script> -->
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+<script type="text/javascript">
+  function setCookie(name,value,days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
+    }else{
+        var expires = "";
+    }
+    document.cookie = name+"="+value+expires+"; path=/";
+}
+  // 获取cookie
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+</script>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      message: '2333',
+      backgroundImage: 'http://p.agolddata.com/hb/image/img_openeye.png',
+      visible: false,
+      input_account: '',
+      input_password: '',
+      error_msg: '2333'
+    },
+    mounted() {
+      // console.log('页面加载完毕');
+      var tokenStr = getCookie('token');
+      if (tokenStr&&tokenStr.length > 10) {
+        this.$message({
+          message: '您已登录，即将跳到主页',
+          type: 'success'
+        });
+        setTimeout(function () {
+          window.location.href = "index.html";
+        }, 3500);
+      }
+    },
+    methods: {
+      login_action: function () {
+        console.log('/sticker/api/v1/getmytoken/')
+        if (this.input_account.length < 1) {
+          this.error_msg = '账号不能为空';
+          this.visible = true;
+          return;
+        }
+        else if (this.input_password.length < 1) {
+          this.visible = true;
+          this.error_msg = '密码不能为空';
+          return;
+        }
+        var _this = this;
+        const params = new URLSearchParams();
+        params.append('username', this.input_account);
+        var hash = md5(this.input_password);
+        params.append('password', hash);
+
+        axios.post('/sticker/api/v1/getmytoken/', {
+        'username': this.input_account,
+        'password': this.input_password
+      })
+          .then(function (response) {
+            if (response.data.error) {
+              _this.$message({
+                showClose: true,
+                message: response.data.message,
+                type: 'error'
+              });
+            }
+            else {
+          //     setCookie('user_id', response.data.data.user_id, 100)
+          setCookie('sticker_email', _this.input_account, 100)
+          setCookie('sticker_token', response.data.token, 100)
+
+              //跳转到主页
+              window.location.href = window.location.origin + '/sticker/static/s.html';
+            }
+            console.log('response=====' + JSON.stringify(response));
+          })
+          .catch(function (error) {
+            console.log('error=====' + error);
+          });
+      },
+      reverseMessage: function () {
+        this.visible = true;
+        this.error_msg = '为防止机器注册，暂不开放，请关注微信公众号pandago回复`登录`实现免密登录';
+        // window.location.href = "1.html"; //?backurl="+window.location.href;  
+      },
+      onFocus: function () {
+        console.log('onFocus');
+        this.backgroundImage = 'http://p.agolddata.com/hb/image/img_closeeye.png'
+      },
+      lostFocus: function () {
+        console.log('onFocus');
+        this.backgroundImage = 'http://p.agolddata.com/hb/image/img_openeye.png'
+      },
+      contactUs: function () {
+        this.visible = true;
+        this.error_msg = '关注微信公众号pandago，回复`登录`实现免密登录，如果有急事请联系微信或QQ：1573157873';
+      }
+    }
+  })
+</script>
+
+</html>

@@ -149,6 +149,7 @@
 </body>
 <!-- <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.min.js"></script> -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/Tencent/weui@master/src/example/zepto.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
 <script type="text/javascript">
 // 用于记录上传的所有文件
 var uploadFiles = [];
@@ -265,6 +266,7 @@ function submitFormData() {
   formData.append('fileSize', fileSize);
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/sticker/api/v1/addsticker/');
+  xhr.setRequestHeader('Authorization','Bearer ' + Cookies.get('sticker_token'));
   xhr.send(formData);
   //上传进度UI
   // https://developer.mozilla.org/zh-CN/docs/Web/API/File/Using_files_from_web_applications#Example.3A_Using_object_URLs_to_display_images

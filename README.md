@@ -175,6 +175,11 @@ class Post(db.Model):
 #venv/lib/python3.7/site-packages/sqlalchemy/orm/query.py:3227
 
 
-
+#venv/lib/python3.7/site-packages/flask_httpauth.py:59
+auth = request.authorization 为什么有值？？？
+# 检测用户是否登录
+venv/lib/python3.7/site-packages/flask_login/login_manager.py:321
+# 设置cookie
+venv/lib/python3.7/site-packages/flask_login/login_manager.py:442
 ```
 
